@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SwarmForge AI — Autonomous Visual Agent Swarm Creator</title>
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Root Container -->
+  <div class="app-container">
+    
+    <!-- Top Control Navbar Bar -->
+    <header class="app-header">
+      <div class="brand">
+        <span class="logo-icon">⚡</span>
+        <div class="logo-text">
+          <h1>SwarmForge <span class="badge">AGENTIC SWARMS</span></h1>
+          <p>Autonomous Visual AI Agent Orchestrator</p>
+        </div>
+      </div>
+      
+      <!-- Presets & Controls -->
+      <div class="header-controls">
+        <div class="control-group">
+          <label for="preset-select">Swarm Presets</label>
+          <select id="preset-select">
+            <option value="" disabled selected>Load Preset Collective...</option>
+            <option value="dev-team">Software Engineering Team (Coder + Architect + Critic)</option>
+            <option value="quant-board">Hedge Fund Quantitative Board (Tech + Fund + Sentiment)</option>
+            <option value="content-forge">Creative Content Studio (Researcher + Writer + Editor)</option>
+          </select>
+        </div>
+        
+        <div class="btn-group">
+          <button id="btn-import" class="btn btn-secondary" title="Load swarm JSON file">📂 Import</button>
+          <button id="btn-export" class="btn btn-secondary" title="Save swarm config as JSON">💾 Export</button>
+          <button id="btn-clear" class="btn btn-danger" title="Clear all nodes and lines">🗑️ Clear</button>
+        </div>
+
+        <div class="api-key-box">
+          <input type="password" id="gemini-key" placeholder="Enter Gemini API Key (Optional)..." title="API Key is stored locally in-memory. If omitted, mock sandbox execution will run.">
+        </div>
+
+        <button id="btn-run" class="btn btn-primary btn-glow">⚡ Run Swarm Pipeline</button>
+      </div>
+    </header>
+
+    <!-- Main Workspace Area -->
+    <main class="app-workspace">
+      
+      <!-- Left Panel: Nodes Palette -->
+      <aside class="sidebar-left">
+        <div class="section-title">
+          <h2>Agent Toolbelt</h2>
+          <p>Drag or click to add specialized agent nodes to your visual swarm pipeline.</p>
+        </div>
+        
+        <div class="agent-palette" id="agent-palette">
+          <!-- Planner Node Template -->
+          <div class="palette-item" data-role="planner">
+            <div class="palette-icon" style="background: var(--info);">📋</div>
+            <div class="palette-desc">
+              <h3>Lead Project Planner</h3>
+              <p>Breaks prompts into structured backlogs & coordinates workflow steps.</p>
+            </div>
+          </div>
+          
+          <!-- Researcher Node Template -->
+          <div class="palette-item" data-role="researcher">
+            <div class="palette-icon" style="background: var(--accent-secondary);">🔍</div>
+            <div class="palette-desc">
+              <h3>Web & Docs Researcher</h3>
+              <p>Gathers semantic search information and compiles high-impact notes.</p>
+            </div>
+          </div>
+
+          <!-- Coder Node Template -->
+          <div class="palette-item" data-role="coder">
+            <div class="palette-icon" style="background: var(--accent-primary);">💻</div>
+            <div class="palette-desc">
+              <h3>Senior Software Engineer</h3>
+              <p>Writes clean logic, scripts, and structures software components.</p>
+            </div>
+          </div>
+
+          <!-- UI Designer Node Template -->
+          <div class="palette-item" data-role="designer">
+            <div class="palette-icon" style="background: var(--warning);">🎨</div>
+            <div class="palette-desc">
+              <h3>Creative UI/UX Designer</h3>
+              <p>Designs premium, interactive frontend components and stylesheets.</p>
+            </div>
+          </div>
+
+          <!-- Auditor / Critic Node Template -->
+          <div class="palette-item" data-role="auditor">
+            <div class="palette-icon" style="background: var(--danger);">🛡️</div>
+            <div class="palette-desc">
+              <h3>Security & Code Auditor</h3>
+              <p>Tests security leaks, catches formatting bugs, and reviews solutions.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="canvas-hints">
+          <p>💡 **Pro Tip:** Drag a node's output handle (🟢) to another node's input handle (🔴) to connect them and define the execution execution flow!</p>
+        </div>
+      </aside>
+
+      <!-- Center: Interactive Pannable Canvas Grid -->
+      <section class="canvas-container" id="canvas-container">
+        <!-- SVG overlay for dynamic connector cables -->
+        <svg class="connection-svg" id="connection-svg">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(255, 255, 255, 0.45)" />
+            </marker>
+            <marker id="arrow-active" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-secondary)" />
+            </marker>
+          </defs>
+        </svg>
+        
+        <!-- The dynamic workspace grid itself -->
+        <div class="canvas-workspace" id="canvas-workspace">
+          <!-- Canvas items will be dynamically generated here -->
+          
+          <div class="canvas-welcome" id="canvas-welcome">
+            <div class="welcome-card">
+              <h2>Design Your Swarm</h2>
+              <p>Add nodes from the sidebar, link their connection handles, configure their variables, and click **Run Swarm Pipeline** to watch them coordinate live!</p>
+              <div class="presets-shortcut">
+                <button class="btn btn-small" onclick="loadPreset('dev-team')">💻 Load Dev Team</button>
+                <button class="btn btn-small" onclick="loadPreset('quant-board')">📈 Load Quant Board</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hidden inputs for file loading -->
+        <input type="file" id="import-file" style="display: none;" accept=".json">
+      </section>
+
+      <!-- Right Panel: Live Swarm Execution Console -->
+      <aside class="sidebar-right">
+        <!-- Tabs Menu -->
+        <div class="console-tabs">
+          <button class="tab-btn active" data-tab="console">📟 Swarm Console</button>
+          <button class="tab-btn" data-tab="artifacts">📦 Generated Vault</button>
+          <button class="tab-btn" data-tab="parameters">⚙️ Parameters</button>
+        </div>
+
+        <!-- Tab content 1: Swarm Console (Debates & Chat logs) -->
+        <div class="tab-panel active" id="tab-console">
+          <div class="panel-header">
+            <h3>Live Agent Debates & Output Logs</h3>
+            <button id="btn-clear-console" class="btn-clear-console">Clear Console</button>
+          </div>
+          
+          <div class="console-logs" id="console-logs">
+            <!-- Simulated agent typing and message boards will appear here -->
+            <div class="log-message system-log">
+              <span class="log-time">[09:46:00]</span> SwarmForge initialized successfully. Ready to build swarm canvas structures.
+            </div>
+          </div>
+
+          <div class="swarm-status-bar" id="swarm-status-bar">
+            <span class="status-indicator idle"></span>
+            <span id="status-text">Swarm State: Idle</span>
+          </div>
+        </div>
+
+        <!-- Tab content 2: Artifacts Vault (Code & File previews) -->
+        <div class="tab-panel" id="tab-artifacts">
+          <div class="panel-header">
+            <h3>Generated Files & Code Modules</h3>
+            <button id="btn-copy-artifact" class="btn btn-small btn-secondary">Copy Content</button>
+          </div>
+
+          <div class="artifacts-list" id="artifacts-list">
+            <!-- Dynamically populated list of generated files -->
+            <div class="no-artifacts">No files have been generated by the swarm yet. Run the pipeline to produce code outputs.</div>
+          </div>
+
+          <div class="artifact-preview-box">
+            <div class="preview-header" id="artifact-name">no_active_file.txt</div>
+            <pre class="preview-body" id="artifact-content">Select a generated file from the list above to view its contents with syntax highlight features.</pre>
+          </div>
+        </div>
+
+        <!-- Tab content 3: Parameters Settings -->
+        <div class="tab-panel" id="tab-parameters">
+          <div class="panel-header">
+            <h3>Global Swarm Parameters</h3>
+          </div>
+          
+          <div class="parameters-form">
+            <div class="form-group">
+              <label for="swarm-prompt">Master Directive / Swarm Goal</label>
+              <textarea id="swarm-prompt" placeholder="Describe the goal you want the AI swarm to achieve...">Create a premium, high-performance visual weather dashboard app with dynamic background elements, search auto-completion, and full HSL dark mode switches.</textarea>
+            </div>
+            
+            <div class="form-group">
+              <label for="step-delay">Simulation Step Delay (seconds)</label>
+              <input type="range" id="step-delay" min="1" max="10" value="3">
+              <div class="range-value"><span id="delay-val">3</span>s</div>
+            </div>
+
+            <div class="form-group">
+              <label for="model-temp">Model Creativity (Temperature)</label>
+              <input type="range" id="model-temp" min="0" max="1" step="0.1" value="0.7">
+              <div class="range-value"><span id="temp-val">0.7</span></div>
+            </div>
+
+            <div class="form-group toggle-group">
+              <label for="toggle-real-api">Enable Real Gemini Swarm API</label>
+              <input type="checkbox" id="toggle-real-api">
+              <span class="toggle-desc">If toggled ON, the swarm will call the Gemini API directly to generate actual code. If OFF, a beautiful mock quantitative debate simulation will run.</span>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+    </main>
+
+  </div>
+
+  <!-- External scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
